@@ -36,7 +36,7 @@ public class CommonController {
        attrs.put("status", String.valueOf(status.value()));
        attrs.put("path", request.getRequestURI());
        attrs.put("method", request.getMethod());
-       attrs.put("message",e.getMessage());
+       attrs.put("messages",e.getMessage());
        attrs.put("timestamp", LocalDateTime.now().toString());
 
         model.addAllAttributes(attrs);
