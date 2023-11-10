@@ -9,6 +9,10 @@ spring:
     username: BOARD
     password: _aA123456
 
+  sql:
+    init:
+      mode: always
+
   # 파일 업로드 설정
   servlet:
     multipart:

@@ -12,7 +12,7 @@ public class Utils {
 
     static {
         validationsBundle = ResourceBundle.getBundle("messages.validations");
-        errorsBundle = ResourceBundle.getBundle("message.errors");
+        errorsBundle = ResourceBundle.getBundle("messages.errors");
     }
 
     public static String getMessage(String code, String bundleType) {
