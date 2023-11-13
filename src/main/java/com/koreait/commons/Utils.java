@@ -45,6 +45,14 @@ public class Utils {
     }
 
     public String tpl(String tplPath) {
+
         return String.format("%s/" + tplPath, isMobile()?"mobile":"front");
+    }
+
+    public static void loginInit(HttpSession session) {
+        session.removeAttribute("email");
+        session.removeAttribute("NotBlank_email");
+        session.removeAttribute("NotBlank_password");
+        session.removeAttribute("globalError");
     }
 }
