@@ -9,9 +9,8 @@ spring:
     username: BOARD
     password: _aA123456
 
-  sql:
-    init:
-      mode: always
+  flyway:
+    enabled: true
 
   # 파일 업로드 설정
   servlet:
@@ -31,7 +30,7 @@ spring:
   # 타임리프 설정
   thymeleaf:
     cache: false
-    prefix: file:src/main/resources/templates
+    prefix: file:src/main/resources/templates/
 
 file:
   upload:
