@@ -13,6 +13,20 @@ spring:
     username: BOARD
     password: _aA123456
 
+  # JAP 설정
+  jpa:
+    properties:
+      hibernate:
+        # 실행되는 쿼리를 콘솔에 출력
+        show_sql: true
+        # 콘솔 창에 출력되는 쿼리 정렬
+        format_sql: true
+        use_sql_comments: true
+        # DB 플랫폼 설정??
+        dialect: org.hibernate.dialect.OracleDialect
+    hibernate:
+      ddlAuto: create
+
   # 파일 업로드 설정
     multipart:
       maxFileSize: 20MB
@@ -44,5 +58,7 @@ file:
 logging:
   level:
     org:
-      springframework:
-        jdbc: trace
+      hibernate:
+        type:
+          descriptor:
+            sql: trace
