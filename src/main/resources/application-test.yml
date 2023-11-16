@@ -1,8 +1,8 @@
 spring:
   # 데이터베이스 설정
   datasource:
-    driverClassName: oracle.h2.Driver
-    url: jdbc:oracle:thin:@localhost:1521:orcl
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:test
     username: sa
     password:
 
@@ -18,7 +18,7 @@ spring:
         # DB 플랫폼 설정??
         dialect: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddlAuto: create
+      ddlAuto: update
 
 # 로거 설정
 logging:
