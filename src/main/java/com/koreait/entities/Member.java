@@ -1,27 +1,38 @@
 package com.koreait.entities;
 
-import com.koreait.commons.constants.MemberType;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-
-import java.time.LocalDateTime;
+import lombok.NoArgsConstructor;
+import com.koreait.commons.constants.MemberType;
 
 @Data
-public class Member {
-
-    @Id
+@Builder
+@Entity
+@NoArgsConstructor @AllArgsConstructor
+@Table(indexes = {
+        @Index(name="idx_member_userNm", columnList = "userNm"),
+        @Index(name="idx_member_mobile", columnList = "mobile")
+})
+public class Member extends Base {
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long userNo;
 
+    @Column(length=65, unique = true, nullable = false)
     private String email;
 
+    @Column(length=65, name="pw", nullable = false)
     private String password;
 
+    @Column(length=40, nullable = false)
     private String userNm;
 
+    @Column(length=11)
     private String mobile;
 
+    @Column(length=10, nullable = false)
+    @Enumerated(EnumType.STRING)
     private MemberType mtype = MemberType.USER;
 
-    private LocalDateTime regDt;
-    private LocalDateTime modDt;
 }
