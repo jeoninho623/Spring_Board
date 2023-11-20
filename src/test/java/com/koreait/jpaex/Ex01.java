@@ -5,6 +5,7 @@ import com.koreait.entities.BoardData;
 import com.koreait.entities.Member;
 import com.koreait.repositories.BoardDataRepository;
 import com.koreait.repositories.MemberRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class Ex01 {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    private EntityManager em;
+
     @BeforeEach
     void init() {
         Member member = Member.builder()
@@ -38,7 +42,7 @@ public class Ex01 {
                 .member(member)
                 .build();
         boardDataRepository.saveAndFlush(item);
-
+        em.clear();
     }
 
     @Test
