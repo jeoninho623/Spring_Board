@@ -1,11 +1,11 @@
 package com.koreait.entities;
 
+import com.koreait.commons.constants.MemberType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.koreait.commons.constants.MemberType;
 
 @Data
 @Builder
@@ -34,5 +34,4 @@ public class Member extends Base {
     @Column(length=10, nullable = false)
     @Enumerated(EnumType.STRING)
     private MemberType mtype = MemberType.USER;
-
 }

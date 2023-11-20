@@ -8,16 +8,22 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@Entity
 @NoArgsConstructor @AllArgsConstructor
-public class BoardData extends BaseMember{
-    @Id @GeneratedValue
-    private long seq;   // 게시글 번호
+@Entity
+public class BoardData extends BaseMember {
+
+    @Id
+    @GeneratedValue
+    private Long seq;
 
     @Column(length = 100, nullable = false)
-    private String title;   // 게시글 제목
+    private String title;
 
     @Lob
-    @Column(nullable = false)
-    private String content; // 게시글 내용
+    @Column(length = 100, nullable = false)
+    private String content;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="userNo")
+    private Member member;
 }

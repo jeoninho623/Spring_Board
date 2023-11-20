@@ -8,6 +8,7 @@ spring:
 
   # JAP 설정
   jpa:
+    open-in-view: true
     properties:
       hibernate:
         # 실행되는 쿼리를 콘솔에 출력
@@ -18,7 +19,7 @@ spring:
         # DB 플랫폼 설정??
         dialect: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddlAuto: update
+      ddlAuto: create
 
 # 로거 설정
 logging:
