@@ -23,32 +23,31 @@ public class CommonController {
     @ExceptionHandler(Exception.class)
     public String errorHandler(Exception e, Model model, HttpServletRequest request, HttpServletResponse response) {
 
-       HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;       // 500 Error
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        if (e instanceof CommonException) {
+            CommonException commonException = (CommonException)e;
+            status = commonException.getStatus();
+        }
 
-       if (e instanceof CommonException) {
-           CommonException commonException = (CommonException) e;
-           status = commonException.getStatus();
-       }
+        response.setStatus(status.value());
 
-       response.setStatus(status.value());     // status.value() == int 형태의 변수
-
-       Map<String, String> attrs = new HashMap<>();
-       attrs.put("status", String.valueOf(status.value()));
-       attrs.put("path", request.getRequestURI());
-       attrs.put("method", request.getMethod());
-       attrs.put("messages",e.getMessage());
-       attrs.put("timestamp", LocalDateTime.now().toString());
+        Map<String, String> attrs = new HashMap<>();
+        attrs.put("status", String.valueOf(status.value()));
+        attrs.put("path", request.getRequestURI());
+        attrs.put("method", request.getMethod());
+        attrs.put("message", e.getMessage());
+        attrs.put("timestamp", LocalDateTime.now().toString());
 
         model.addAllAttributes(attrs);
 
-       Writer writer = new StringWriter();
-       PrintWriter pr = new PrintWriter(writer);
+        Writer writer = new StringWriter();
+        PrintWriter pr = new PrintWriter(writer);
 
-       e.printStackTrace(pr);
+        e.printStackTrace(pr);
 
-       String errorMessage = ((StringWriter)writer).toString();
-       log.error(errorMessage);
+        String errorMessage = ((StringWriter)writer).toString();
+        log.error(errorMessage);
 
-       return "error/common";
+        return "error/common";
     }
 }
