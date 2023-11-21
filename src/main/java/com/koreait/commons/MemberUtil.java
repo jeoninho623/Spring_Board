@@ -1,5 +1,6 @@
 package com.koreait.commons;
 
+import com.koreait.commons.constants.MemberType;
 import com.koreait.entities.Member;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,14 @@ public class MemberUtil {
 
     public boolean isLogin() {
         return getMember() != null;
+    }
+
+    /**
+     * 관리자 여부 체크
+     * @return
+     */
+    public boolean isAdmin() {
+        return isLogin() && getMember().getMtype() == MemberType.ADMIN;
     }
 
     public Member getMember() {
