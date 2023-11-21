@@ -12,14 +12,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableJpaAuditing
 @EnableScheduling
 @EnableConfigurationProperties(FileUploadConfig.class)
-public class MvcConfig implements WebMvcConfigurer  {
+public class MvcConfig implements WebMvcConfigurer {
 
     @Autowired
     private FileUploadConfig fileUploadConfig;
@@ -27,22 +26,12 @@ public class MvcConfig implements WebMvcConfigurer  {
     @Autowired
     private CommonInterceptor commonInterceptor;
 
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/")
-                .setViewName("front/main/index");
-
-        registry.addViewController("/mypage")
-                .setViewName("/front/main/index");
-
-        registry.addViewController("/admin")
-                .setViewName(("/front/main/index"));
-    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(commonInterceptor)
                 .addPathPatterns("/**");
+
     }
 
     @Override
@@ -54,6 +43,7 @@ public class MvcConfig implements WebMvcConfigurer  {
 
     @Bean
     public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
+
         return new HiddenHttpMethodFilter();
     }
 
@@ -61,8 +51,9 @@ public class MvcConfig implements WebMvcConfigurer  {
     public MessageSource messageSource() {
         ResourceBundleMessageSource ms = new ResourceBundleMessageSource();
         ms.setDefaultEncoding("UTF-8");
-        ms.addBasenames("messages.commons", "message.validations","message.errors");
+        ms.addBasenames("messages.commons", "messages.validations", "messages.errors");
 
         return ms;
     }
+
 }
