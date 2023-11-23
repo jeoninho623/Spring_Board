@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 @Data @Builder
 @NoArgsConstructor @AllArgsConstructor
 public class BoardConfigForm {
+
+    private String mode;
+
     @NotBlank(message="게시판 아이디를 입력하세요~")
     private String bId;
 
