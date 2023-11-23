@@ -2,6 +2,10 @@ server:
   port: 3000
 
 spring:
+  # 프로필 설정
+  profiles:
+    active: dev
+
   # 데이터베이스 설정
   datasource:
     driverClassName: oracle.jdbc.driver.OracleDriver
@@ -13,6 +17,7 @@ spring:
   jpa:
     properties:
       hibernate:
+        globally_quoted_identifiers: true
         # 실행되는 쿼리를 콘솔에 출력
         show_sql: true
         format_sql: true
@@ -32,10 +37,18 @@ spring:
     resources:
       staticLocations: file:src/main/resources/static/
 
+  # 라이브 리로드 설정
+  devtools:
+    livereload:
+      enabled: true
+
   # 타임리프 설정
   thymeleaf:
-    cache: true
-    prefix: classpath:/templates/
+    cache: false
+    prefix: file:src/main/resources/templates/
+
+  flyway:
+    enabled: true
 
 file:
   upload:

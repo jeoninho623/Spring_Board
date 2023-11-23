@@ -21,8 +21,6 @@ public class QFileInfo extends EntityPathBase<FileInfo> {
 
     public final QBaseMember _super = new QBaseMember(this);
 
-    public final StringPath contentType = createString("contentType");
-
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
@@ -34,6 +32,8 @@ public class QFileInfo extends EntityPathBase<FileInfo> {
     public final StringPath extension = createString("extension");
 
     public final StringPath fileName = createString("fileName");
+
+    public final StringPath fileType = createString("fileType");
 
     public final StringPath gid = createString("gid");
 

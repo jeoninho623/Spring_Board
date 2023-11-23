@@ -1,7 +1,9 @@
 server:
-  port: 3000
+  port: 3005
 
 spring:
+
+
   # 데이터베이스 설정
   datasource:
     driverClassName: oracle.jdbc.driver.OracleDriver
@@ -13,6 +15,7 @@ spring:
   jpa:
     properties:
       hibernate:
+        globally_quoted_identifiers: true
         # 실행되는 쿼리를 콘솔에 출력
         show_sql: true
         format_sql: true

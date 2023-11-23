@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -23,15 +24,15 @@ public class MemberController implements CommonProcess {
     private final MemberSaveService saveService;
 
     @GetMapping("/join")
-    public String join(Model model) {
-        commonProcess(model, "회원가입");
+    public String join(@ModelAttribute RequestJoin form, Model model) {
+        commonProcess(model, Utils.getMessage("회원가입", "common"));
 
         return utils.tpl("member/join");
     }
 
     @PostMapping("/join")
     public String joinPs(@Valid RequestJoin form, Errors errors, Model model) {
-        commonProcess(model, "회원가입");
+        commonProcess(model, Utils.getMessage("회원가입", "common"));
 
         saveService.join(form, errors);
 
@@ -44,7 +45,7 @@ public class MemberController implements CommonProcess {
 
     @GetMapping("/login")
     public String login(String redirectURL, Model model) {
-        commonProcess(model, "로그인");
+        commonProcess(model, Utils.getMessage("로그인", "common"));
 
         model.addAttribute("redirectURL", redirectURL);
 
