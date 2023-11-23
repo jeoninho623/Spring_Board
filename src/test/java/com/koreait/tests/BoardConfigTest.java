@@ -26,7 +26,7 @@ public class BoardConfigTest {
     @Test
     @DisplayName("게시판 설정 저장 테스트")
     void boardConfigTest() throws Exception{
-        mockMvc.perform(post("/admin/board/add")
+        mockMvc.perform(post("/admin/board/save")
                         .with(csrf())
                 )
                 .andDo(print());
