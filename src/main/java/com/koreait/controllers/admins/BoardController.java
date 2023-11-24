@@ -36,7 +36,7 @@ public class BoardController implements ScriptExceptionProcess {
     }
 
     @GetMapping("/edit/{bId}")
-    public String update(@PathVariable String bId, Model model) {
+    public String update(@PathVariable("bId") String bId, Model model) {
         commonProcess("edit", model);
 
         return "admin/board/edit";
@@ -45,7 +45,7 @@ public class BoardController implements ScriptExceptionProcess {
     @PostMapping("/save")
     public String save(@Valid BoardConfigForm form, Errors errors, Model model) {
 
-        String mode = form.getMode();
+        String mode = Objects.requireNonNullElse(form.getMode(),"add");
         commonProcess(mode, model);
 
         if(errors.hasErrors()) {
