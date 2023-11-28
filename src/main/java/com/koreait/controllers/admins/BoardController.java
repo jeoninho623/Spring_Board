@@ -1,7 +1,11 @@
 package com.koreait.controllers.admins;
 
+import com.koreait.commons.ListData;
 import com.koreait.commons.ScriptExceptionProcess;
+import com.koreait.commons.constants.BoardAuthority;
 import com.koreait.commons.menus.Menu;
+import com.koreait.entities.Board;
+import com.koreait.models.board.config.BoardConfigInfoService;
 import com.koreait.models.board.config.BoardConfigSaveService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -20,10 +24,16 @@ public class BoardController implements ScriptExceptionProcess {
 
     private final HttpServletRequest request;
     private final BoardConfigSaveService saveService;
+    private final BoardConfigInfoService infoService;
 
     @GetMapping
-    public String list(Model model) {
+    public String list(@ModelAttribute BoardSearch search, Model model) {
         commonProcess("list", model);
+
+        ListData<Board> data = infoService.getList(search);
+
+        model.addAttribute("items", data.getContent());
+        model.addAttribute("pagination", data.getPagination());
 
         return "admin/board/list";
     }
@@ -45,10 +55,10 @@ public class BoardController implements ScriptExceptionProcess {
     @PostMapping("/save")
     public String save(@Valid BoardConfigForm form, Errors errors, Model model) {
 
-        String mode = Objects.requireNonNullElse(form.getMode(),"add");
+        String mode = Objects.requireNonNullElse(form.getMode(), "add");
         commonProcess(mode, model);
 
-        if(errors.hasErrors()) {
+        if (errors.hasErrors()) {
             return "admin/board/" + mode;
         }
 
@@ -60,12 +70,14 @@ public class BoardController implements ScriptExceptionProcess {
     private void commonProcess(String mode, Model model) {
         String pageTitle = "게시판 목록";
         mode = Objects.requireNonNullElse(mode, "list");
-        if(mode.equals("add")) pageTitle = "게시판 등록";
+        if (mode.equals("add")) pageTitle = "게시판 등록";
         else if (mode.equals("edit")) pageTitle = "게시판 수정";
 
         model.addAttribute("pageTitle", pageTitle);
-        model.addAttribute("menuCode","board");
-        model.addAttribute("submenus", Menu.gets("board")); // 하위 메뉴
-        model.addAttribute("subMenuCode",Menu.getSubMenuCode(request)); //
+        model.addAttribute("menuCode", "board");
+        model.addAttribute("submenus", Menu.gets("board"));
+        model.addAttribute("subMenuCode", Menu.getSubMenuCode(request));
+
+        model.addAttribute("authorities", BoardAuthority.getList());
     }
 }

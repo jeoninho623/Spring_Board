@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nx/thymeleaf/layout"
       layout:decorate="~{front/layouts/main}">
-<main layout:fragment="content">
+<main layout:fragment="content" th:object="${boardForm}">
     <form name="frmSave" th:action="@{/board/save}" autocomplete="off" method="POST">
         <input type="hidden" name="mode" value="write">
         <input type="hidden" name="bId" value="">
