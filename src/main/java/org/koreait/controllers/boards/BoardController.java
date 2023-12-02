@@ -12,12 +12,15 @@ import org.koreait.entities.BoardData;
 import org.koreait.models.board.BoardInfoService;
 import org.koreait.models.board.BoardSaveService;
 import org.koreait.models.board.config.BoardConfigInfoService;
+import org.koreait.models.board.config.BoardNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,6 +37,12 @@ public class BoardController implements ScriptExceptionProcess {
     @GetMapping("/write/{bId}")
     public String write(@PathVariable("bId") String bId, @ModelAttribute  BoardForm form, Model model) {
         commonProcess(bId, "write", model);
+
+        if (memberUtil.isLogin()) {
+            form.setPoster(memberUtil.getMember().getUserNm());
+        }
+
+        form.setBId(bId);
 
         return utils.tpl("board/write");
     }
@@ -85,8 +94,23 @@ public class BoardController implements ScriptExceptionProcess {
     private void commonProcess(String bId, String mode, Model model) {
 
         Board board = configInfoService.get(bId);
-        String bName = board.getBName();
 
+        if (board == null || (!board.isActive() && !memberUtil.isAdmin())) { // 등록되지 않거나 또는 미사용 중 게시판
+            throw new BoardNotFoundException();
+        }
+
+        /* 게시판 분류 S */
+        String category = board.getCategory();
+        List<String> categories = StringUtils.hasText(category) ?
+                Arrays.stream(category.trim().split("\\n"))
+                        .map(s -> s.replaceAll("\\r", ""))
+                        .toList()
+                : null;
+
+        model.addAttribute("categories", categories);
+        /* 게시판 분류 E */
+
+        String bName = board.getBName();
         String pageTitle = bName;
         if (mode.equals("write")) pageTitle = bName + " 작성";
         else if (mode.equals("update")) pageTitle = bName + " 수정";
