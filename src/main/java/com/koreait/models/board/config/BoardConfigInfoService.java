@@ -7,6 +7,7 @@ import com.koreait.commons.constants.BoardAuthority;
 import com.koreait.controllers.admins.BoardConfigForm;
 import com.koreait.controllers.admins.BoardSearch;
 import com.koreait.entities.Board;
+import com.koreait.entities.QBoard;
 import com.koreait.repositories.BoardRepository;
 import com.querydsl.core.BooleanBuilder;
 import jakarta.servlet.http.HttpServletRequest;
