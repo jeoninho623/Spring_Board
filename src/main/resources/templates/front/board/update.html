@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{front/layouts/main}">
 
-<main layout:fragment="content" th:object="${boardForm}">
+<main layout:fragment="content">
     <form name="frmSave" th:action="@{/board/save}" autocomplete="off">
         <input type="hidden" name="mode" value="update">
         <input type="hidden" name="seq" value="">

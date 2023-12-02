@@ -1,5 +1,5 @@
 server:
-  port: 3005
+  port: 3000
 
 spring:
   # 프로필 설정
@@ -10,7 +10,7 @@ spring:
   datasource:
     driverClassName: oracle.jdbc.driver.OracleDriver
     url: jdbc:oracle:thin:@localhost:1521:orcl
-    username: BOARD
+    username: PROJECT
     password: _aA123456
 
   # JPA 설정
