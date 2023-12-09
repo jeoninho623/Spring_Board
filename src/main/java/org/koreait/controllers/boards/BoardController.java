@@ -1,5 +1,6 @@
 package org.koreait.controllers.boards;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.koreait.commons.MemberUtil;
@@ -7,11 +8,14 @@ import org.koreait.commons.ScriptExceptionProcess;
 import org.koreait.commons.Utils;
 import org.koreait.commons.constants.BoardAuthority;
 import org.koreait.commons.exceptions.AlertBackException;
+import org.koreait.commons.exceptions.AlertException;
 import org.koreait.entities.Board;
 import org.koreait.entities.BoardData;
 import org.koreait.entities.FileInfo;
+import org.koreait.models.board.BoardDataNotFoundException;
 import org.koreait.models.board.BoardInfoService;
 import org.koreait.models.board.BoardSaveService;
+import org.koreait.models.board.RequiredPasswordCheckException;
 import org.koreait.models.board.config.BoardConfigInfoService;
 import org.koreait.models.board.config.BoardNotFoundException;
 import org.koreait.models.file.FileInfoService;
@@ -108,14 +112,40 @@ public class BoardController implements ScriptExceptionProcess {
 
     @GetMapping("/delete/{seq}")
     public String delete(@PathVariable("seq") Long seq) {
+        if(!infoService.isMine(seq)) {
+            throw new AlertBackException(Utils.getMessage("작성한_게시글만_삭제_가능합니다.","error"));
+        }
 
-        return "redirect:/board/list/게시판 ID";
+        BoardData data = infoService.get(seq);
+
+
+        return "redirect:/board/list/" + data.getBoard().getBId();
     }
 
     @GetMapping("/list/{bId}")
     public String list(@PathVariable("bId") String bId, Model model) {
 
         return utils.tpl("board/list");
+    }
+
+    @PostMapping("/guest/password")
+    public String guestPasswordCheck(String password, HttpSession session, Model model) {
+        Long seq = (Long)session.getAttribute("guest_seq");
+        if(seq == null) {
+            throw new BoardDataNotFoundException();
+        }
+
+        if(!infoService.checkGuestPassword(seq, password)) {    // 비번 검증 실패 시
+            throw new AlertException(Utils.getMessage("비밀번호가_일치하지_않습니다.","error"));
+        }
+
+        // 검증 성공시
+        String key = "chk_" + seq;
+        session.setAttribute(key, true);
+        session.removeAttribute("guest_seq");
+
+        model.addAttribute("script", "parent.location.reload()");
+        return "common/_execute_script";
     }
 
     private void commonProcess(String bId, String mode, Model model) {
@@ -170,5 +200,11 @@ public class BoardController implements ScriptExceptionProcess {
         model.addAttribute("addCommonScript", addCommonScript);
         model.addAttribute("addScript", addScript);
         model.addAttribute("pageTitle", pageTitle);
+    }
+
+    @ExceptionHandler(RequiredPasswordCheckException.class)
+    public String guestPassword() {
+
+        return utils.tpl("board/password");
     }
 }
