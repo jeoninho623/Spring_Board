@@ -68,27 +68,34 @@ public class BoardInfoService {
         String bId = search.getBId(); // 게시판 아이디
         String sopt  = Objects.requireNonNullElse(search.getSopt(), "subject_content"); // 검색 옵션
         String skey = search.getSkey(); // 검색 키워드
+        String category = search.getCategory(); // 게시판 분류
 
         BooleanBuilder andBuilder = new BooleanBuilder();
         andBuilder.and(boardData.board.bId.eq(bId));
+
+        // 게시판 분류 검색 처리
+        if(StringUtils.hasText(category)) {
+            category = category.trim();
+            andBuilder.and(boardData.category.eq(category));
+        }
 
         // 키워드 검색 처리
         if (StringUtils.hasText(skey)) {
             skey = skey.trim();
 
-            if (skey.equals("subject")) { // 제목 검색
+            if (sopt.equals("subject")) { // 제목 검색
                 andBuilder.and(boardData.subject.contains(skey));
 
-            } else if (skey.equals("content")) { // 내용 검색
+            } else if (sopt.equals("content")) { // 내용 검색
                 andBuilder.and(boardData.content.contains(skey));
 
-            } else if (skey.equals("subject_content")) { // 제목 + 내용 검색
+            } else if (sopt.equals("subject_content")) { // 제목 + 내용 검색
                 BooleanBuilder orBuilder = new BooleanBuilder();
                 orBuilder.or(boardData.subject.contains(skey))
                         .or(boardData.content.contains(skey));
 
                 andBuilder.and(orBuilder);
-            } else if (skey.equals("poster")) { // 작성자 + 아이디
+            } else if (sopt.equals("poster")) { // 작성자 + 아이디
                 BooleanBuilder orBuilder = new BooleanBuilder();
                 orBuilder.or(boardData.poster.contains(skey))
                         .or(boardData.member.email.contains(skey))
@@ -102,6 +109,8 @@ public class BoardInfoService {
         PathBuilder pathBuilder = new PathBuilder(BoardData.class, "boardData");
         List<BoardData> items = new JPAQueryFactory(em)
                 .selectFrom(boardData)
+                .leftJoin(boardData.board)
+                .leftJoin(boardData.member)
                 .where(andBuilder)
                 .offset(offset)
                 .limit(limit)
