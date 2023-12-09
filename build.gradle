@@ -26,7 +26,6 @@ dependencies {
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.3.0'
 	implementation 'org.modelmapper:modelmapper:3.2.0'
 	implementation 'net.coobird:thumbnailator:0.4.20'
-	implementation 'com.oracle.database.nls:orai18n:23.2.0.0'
 
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
@@ -63,4 +62,3 @@ tasks.withType(JavaCompile) {
 clean.doLast {
 	file(querydslDir).deleteDir()
 }
-

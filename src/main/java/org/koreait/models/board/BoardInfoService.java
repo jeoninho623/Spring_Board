@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.koreait.commons.ListData;
 import org.koreait.commons.MemberUtil;
@@ -16,6 +17,7 @@ import org.koreait.controllers.boards.BoardDataSearch;
 import org.koreait.controllers.boards.BoardForm;
 import org.koreait.entities.BoardData;
 import org.koreait.entities.FileInfo;
+import org.koreait.entities.Member;
 import org.koreait.entities.QBoardData;
 import org.koreait.models.file.FileInfoService;
 import org.koreait.repositories.BoardDataRepository;
@@ -34,7 +36,8 @@ public class BoardInfoService {
     private final FileInfoService fileInfoService;
     private final HttpServletRequest request;
     private final EntityManager em;
-    private final MemberUtil memberUtil;
+    private final MemberUtil memberUtill;
+    private final HttpSession session;
 
     public BoardData get(Long seq) {
 
@@ -59,7 +62,7 @@ public class BoardInfoService {
         int page = Utils.getNumber(search.getPage(), 1);
         int limit = Utils.getNumber(search.getLimit(), 20);
         int offset = (page - 1) * limit;
-        
+
         String bId = search.getBId(); // 게시판 아이디
         String sopt  = Objects.requireNonNullElse(search.getSopt(), "subject_content"); // 검색 옵션
         String skey = search.getSkey(); // 검색 키워드
@@ -131,17 +134,28 @@ public class BoardInfoService {
     }
 
     public boolean isMine(Long seq) {
-        if (memberUtil.isAdmin()) { // 관리자는 수정, 삭제 모두 가능
+        if (memberUtill.isAdmin()) { // 관리자는 수정, 삭제 모두 가능
             return true;
         }
-        BoardData data = get(seq);
-        if(data.getMember() != null && (!memberUtil.isLogin()
-                || data.getMember().getUserNo() != memberUtil.getMember().getUserNo())
 
-        ) {  // 회원 등록 게시물이지만 직접 작성한 게시글이 아닌 경우
-            return false;
+        BoardData data = get(seq);
+        System.out.println("check : " + data.getMember() == null);
+        if (data.getMember() != null) {
+
+            // 회원 등록 게시물이만 직접 작성한 게시글인 경우
+            Member boardMember = data.getMember();
+            Member member = memberUtill.getMember();
+            return memberUtill.isLogin() && boardMember.getUserNo().longValue() == member.getUserNo().longValue();
+        } else { // 비회원 게시글
+            // 세션에 chk_게시글번호 항목이 있으면 비번 검증 완료
+            String key = "chk_" + seq;
+            if (session.getAttribute(key) == null) { // 비회원 비밀번호 검증 X -> 검증 화면으로 이동
+                session.setAttribute("guest_seq", seq);
+                throw new RequiredPasswordCheckException();
+            } else { // 비회원 게시글 검증 성공시
+                return true;
+            }
         }
 
-        return true;
     }
 }
