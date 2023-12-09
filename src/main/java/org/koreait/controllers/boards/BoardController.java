@@ -9,10 +9,12 @@ import org.koreait.commons.constants.BoardAuthority;
 import org.koreait.commons.exceptions.AlertBackException;
 import org.koreait.entities.Board;
 import org.koreait.entities.BoardData;
+import org.koreait.entities.FileInfo;
 import org.koreait.models.board.BoardInfoService;
 import org.koreait.models.board.BoardSaveService;
 import org.koreait.models.board.config.BoardConfigInfoService;
 import org.koreait.models.board.config.BoardNotFoundException;
+import org.koreait.models.file.FileInfoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -33,6 +35,7 @@ public class BoardController implements ScriptExceptionProcess {
     private final BoardSaveService saveService;
     private final BoardInfoService infoService;
     private final BoardConfigInfoService configInfoService;
+    private final FileInfoService fileInfoService;
 
     @GetMapping("/write/{bId}")
     public String write(@PathVariable("bId") String bId, @ModelAttribute  BoardForm form, Model model) {
@@ -49,6 +52,11 @@ public class BoardController implements ScriptExceptionProcess {
 
     @GetMapping("/update/{seq}")
     public String update(@PathVariable("seq") Long seq, Model model) {
+        BoardForm form = infoService.getForm(seq);
+        System.out.println(form);
+        commonProcess(form.getBId(), "update", model);
+
+        model.addAttribute("boardForm", form);
 
         return utils.tpl("board/update");
     }
@@ -60,11 +68,18 @@ public class BoardController implements ScriptExceptionProcess {
 
         commonProcess(bId, mode, model);
 
+        saveService.save(form, errors);
+
         if (errors.hasErrors()) {
+            String gid = form.getGid();
+            List<FileInfo> editorImages = fileInfoService.getListAll(gid, "editor");
+            List<FileInfo> attachFiles = fileInfoService.getListAll(gid, "attach");
+            form.setEditorImages(editorImages);
+            form.setAttachFiles(attachFiles);
+
             return utils.tpl("board/" + mode);
         }
 
-        saveService.save(form);
 
         return "redirect:/board/list/" + bId;
     }
@@ -94,7 +109,6 @@ public class BoardController implements ScriptExceptionProcess {
     private void commonProcess(String bId, String mode, Model model) {
 
         Board board = configInfoService.get(bId);
-
         if (board == null || (!board.isActive() && !memberUtil.isAdmin())) { // 등록되지 않거나 또는 미사용 중 게시판
             throw new BoardNotFoundException();
         }

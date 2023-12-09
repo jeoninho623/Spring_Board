@@ -6,6 +6,13 @@ window.addEventListener("DOMContentLoaded", function() {
         window.editor = editor;
     })
     .catch(err => console.error(err));
+
+
+    /* 이미지 본문 추가 이벤트 처리 */
+    const insertEditors = document.getElementsByClassName("insert_editor");
+    for (const el of insertEditors) {
+        el.addEventListener("click", (e) => insertEditor(e.currentTarget.dataset.url));
+    }
 });
 
 /**
@@ -49,21 +56,18 @@ function fileUploadCallback(files) {
     }
 }
 
-
 /**
-*   이미지 본문 추가
+* 이미지 본문 추가
 *
 */
 function insertEditor(source) {
-    editor.execute('insertImage', {source});
+    editor.execute('insertImage', { source });
 }
 
-
 /**
-*   파일 삭제 후 콜백 처리
+* 파일 삭제 후 콜백 처리
 *
-**/
-
+*/
 function fileDeleteCallback(fileId) {
     const el = document.getElementById(`file_${fileId}`);
     el.parentElement.removeChild(el);
