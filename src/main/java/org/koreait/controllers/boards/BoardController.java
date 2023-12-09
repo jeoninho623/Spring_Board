@@ -40,6 +40,8 @@ public class BoardController implements ScriptExceptionProcess {
     private final BoardConfigInfoService configInfoService;
     private final FileInfoService fileInfoService;
 
+    private BoardData boardData;
+
     @GetMapping("/write/{bId}")
     public String write(@PathVariable("bId") String bId, @ModelAttribute  BoardForm form, Model model) {
         commonProcess(bId, "write", model);
@@ -100,19 +102,28 @@ public class BoardController implements ScriptExceptionProcess {
     }
 
     @GetMapping("/view/{seq}")
-    public String view(@PathVariable("seq") Long seq, Model model) {
+    public String view(@PathVariable("seq") Long seq, @ModelAttribute BoardDataSearch search ,Model model) {
 
         BoardData data = infoService.get(seq);
+        boardData = data;
+
+        String bId = data.getBoard().getBId();
+        commonProcess(bId, "view", model);
+
+        search.setBId(bId);
+        ListData<BoardData> listData = infoService.getList(search);
 
         model.addAttribute("boardData", data);
+        model.addAttribute("items", listData.getContent());
+        model.addAttribute("pagination", listData.getPagination());
 
         return utils.tpl("board/view");
     }
 
     @GetMapping("/delete/{seq}")
     public String delete(@PathVariable("seq") Long seq) {
-        if(!infoService.isMine(seq)) {
-            throw new AlertBackException(Utils.getMessage("작성한_게시글만_삭제_가능합니다.","error"));
+        if (!infoService.isMine(seq)) {
+            throw new AlertBackException(Utils.getMessage("작성한_게시글만_삭제_가능합니다.", "error"));
         }
 
         BoardData data = infoService.get(seq);
@@ -129,21 +140,22 @@ public class BoardController implements ScriptExceptionProcess {
         System.out.println("search : " + search);
 
         ListData<BoardData> data = infoService.getList(search);
-        model.addAttribute("items",data.getContent());
-        model.addAttribute("pagination",data.getPagination());
+        model.addAttribute("items", data.getContent());
+        model.addAttribute("pagination", data.getPagination());
 
         return utils.tpl("board/list");
     }
 
     @PostMapping("/guest/password")
-    public String guestPasswordCheck(String password, HttpSession session, Model model) {
+    public String guestPasswordCheck(@RequestParam("password") String password, HttpSession session, Model model) {
+
         Long seq = (Long)session.getAttribute("guest_seq");
-        if(seq == null) {
+        if (seq == null) {
             throw new BoardDataNotFoundException();
         }
 
-        if(!infoService.checkGuestPassword(seq, password)) {    // 비번 검증 실패 시
-            throw new AlertException(Utils.getMessage("비밀번호가_일치하지_않습니다.","error"));
+        if (!infoService.checkGuestPassword(seq, password)) { // 비번 검증 실패시
+            throw new AlertException(Utils.getMessage("비밀번호가_일치하지_않습니다.", "error"));
         }
 
         // 검증 성공시
@@ -177,7 +189,9 @@ public class BoardController implements ScriptExceptionProcess {
         String pageTitle = bName;
         if (mode.equals("write")) pageTitle = bName + " 작성";
         else if (mode.equals("update")) pageTitle = bName + " 수정";
-        else if (mode.equals("view")) pageTitle = "게시글 제목";
+        else if (mode.equals("view") && boardData != null) {
+            pageTitle = boardData.getSubject() + "||" + bName;
+        }
 
 
         /* 글쓰기, 수정시 권한 체크 S */
